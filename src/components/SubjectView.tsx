@@ -20,9 +20,10 @@ interface SubjectViewProps {
   onBack: () => void;
   onAddItem: (title: string) => void;
   onToggleItem: (itemId: string) => void;
+  onDeleteItem: (itemId: string) => void;
 }
 
-export const SubjectView = ({ subject, onBack, onAddItem, onToggleItem }: SubjectViewProps) => {
+export const SubjectView = ({ subject, onBack, onAddItem, onToggleItem, onDeleteItem }: SubjectViewProps) => {
   const completedCount = subject.roadmapItems.filter(item => item.completed).length;
   const progress = subject.roadmapItems.length > 0 
     ? (completedCount / subject.roadmapItems.length) * 100 
@@ -42,10 +43,10 @@ export const SubjectView = ({ subject, onBack, onAddItem, onToggleItem }: Subjec
 
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 rounded-xl neural-gradient">
+            <div className="p-3 rounded-xl neural-gradient glow-neural">
               <BookOpen className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-4xl font-bold">{subject.title}</h1>
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent neural-gradient">{subject.title}</h1>
           </div>
           {subject.description && (
             <p className="text-muted-foreground text-lg mt-2">{subject.description}</p>
@@ -78,6 +79,7 @@ export const SubjectView = ({ subject, onBack, onAddItem, onToggleItem }: Subjec
                 title={item.title}
                 completed={item.completed}
                 onToggle={() => onToggleItem(item.id)}
+                onDelete={() => onDeleteItem(item.id)}
               />
             ))
           )}

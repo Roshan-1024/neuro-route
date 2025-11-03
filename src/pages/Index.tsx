@@ -72,6 +72,27 @@ const Index = () => {
     if (updated) setSelectedSubject(updated);
   };
 
+  const deleteRoadmapItem = (itemId: string) => {
+    if (!selectedSubject) return;
+
+    const updatedSubjects = subjects.map(subject =>
+      subject.id === selectedSubject.id
+        ? {
+            ...subject,
+            roadmapItems: subject.roadmapItems.filter(item => item.id !== itemId),
+          }
+        : subject
+    );
+
+    setSubjects(updatedSubjects);
+    const updated = updatedSubjects.find(s => s.id === selectedSubject.id);
+    if (updated) setSelectedSubject(updated);
+  };
+
+  const deleteSubject = (subjectId: string) => {
+    setSubjects(subjects.filter(subject => subject.id !== subjectId));
+  };
+
   if (selectedSubject) {
     return (
       <SubjectView
@@ -79,6 +100,7 @@ const Index = () => {
         onBack={() => setSelectedSubject(null)}
         onAddItem={addRoadmapItem}
         onToggleItem={toggleRoadmapItem}
+        onDeleteItem={deleteRoadmapItem}
       />
     );
   }
@@ -88,7 +110,7 @@ const Index = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-3 rounded-xl neural-gradient shadow-elevated">
+            <div className="p-3 rounded-xl neural-gradient glow-neural shadow-elevated">
               <Brain className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-5xl font-bold bg-clip-text text-transparent neural-gradient">
@@ -107,7 +129,7 @@ const Index = () => {
 
         {subjects.length === 0 ? (
           <div className="text-center py-20">
-            <div className="inline-block p-4 rounded-full neural-gradient mb-4 shadow-elevated">
+            <div className="inline-block p-4 rounded-full neural-gradient mb-4 glow-neural shadow-elevated">
               <Brain className="w-12 h-12 text-white" />
             </div>
             <h3 className="text-2xl font-semibold mb-2">Start Your Learning Journey</h3>
@@ -128,6 +150,7 @@ const Index = () => {
                   totalItems={subject.roadmapItems.length}
                   completedItems={completedItems}
                   onClick={() => setSelectedSubject(subject)}
+                  onDelete={() => deleteSubject(subject.id)}
                 />
               );
             })}
