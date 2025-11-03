@@ -46,7 +46,7 @@ export const SubjectView = ({ subject, onBack, onAddItem, onToggleItem, onDelete
             <div className="p-3 rounded-xl neural-gradient glow-neural">
               <BookOpen className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-4xl font-bold bg-clip-text text-transparent neural-gradient">{subject.title}</h1>
+            <h1 className="text-4xl font-bold text-foreground">{subject.title}</h1>
           </div>
           {subject.description && (
             <p className="text-muted-foreground text-lg mt-2">{subject.description}</p>

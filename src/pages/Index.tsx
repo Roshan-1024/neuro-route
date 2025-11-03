@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SubjectCard } from "@/components/SubjectCard";
 import { SubjectView } from "@/components/SubjectView";
 import { AddSubjectDialog } from "@/components/AddSubjectDialog";
@@ -17,9 +17,49 @@ interface Subject {
   roadmapItems: RoadmapItem[];
 }
 
+const STORAGE_KEY = "neuroRoute.subjects";
+const SELECTED_KEY = "neuroRoute.selectedSubjectId";
+
 const Index = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  // Load from localStorage on first mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed: Subject[] = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setSubjects(parsed);
+          const savedSelectedId = localStorage.getItem(SELECTED_KEY);
+          if (savedSelectedId) {
+            const found = parsed.find(s => s.id === savedSelectedId) || null;
+            if (found) setSelectedSubject(found);
+          }
+        }
+      }
+    } catch {
+      // ignore malformed data
+    }
+    setHasLoaded(true);
+  }, []);
+
+  // Persist to localStorage whenever data changes
+  useEffect(() => {
+    if (!hasLoaded) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(subjects));
+      if (selectedSubject) {
+        localStorage.setItem(SELECTED_KEY, selectedSubject.id);
+      } else {
+        localStorage.removeItem(SELECTED_KEY);
+      }
+    } catch {
+      // storage can fail (quota/disabled); safe to ignore
+    }
+  }, [subjects, selectedSubject, hasLoaded]);
 
   const addSubject = (title: string, description: string) => {
     const newSubject: Subject = {
@@ -113,7 +153,7 @@ const Index = () => {
             <div className="p-3 rounded-xl neural-gradient glow-neural shadow-elevated">
               <Brain className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-5xl font-bold bg-clip-text text-transparent neural-gradient">
+            <h1 className="text-5xl font-bold text-foreground">
               Deep Learning Roadmap
             </h1>
           </div>
